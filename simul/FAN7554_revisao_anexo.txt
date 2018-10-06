@@ -1,0 +1,11 @@
+Dúvidas:
+
+1 - Parece que o Offset(0.1V) não foi implementado.
+2 - Parece que o zener de 14v com transistores não foram implementados na saída OUT.
+3 - Quanto a saída do UVLO, antes ou depois do [p/Co] ?
+4 - Divisor de tensão no ponto MAX 1V, entre 2R e R. Algum critério para os valores ?
+5 - O flipflop(FF1), se entendi bem, devia controlar uma chave e dois ampop's, mas só identifique o controle da chave
+
+Modificações:
+
+1 - Implementei o FF2. Não consta no modelo daquele TCC de Madrid, mas existe no datasheet.
