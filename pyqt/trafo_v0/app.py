@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # encoding:  iso-8859-1
 # autor: Jonas V. de Souza
 # data: 10/19/2018
@@ -56,7 +57,7 @@ class App(QWidget):
         self.tabela_model.clicked.connect(self.sel_lin)
         # combo_box
         self.combo_box = combo_box_checkable(self)
-        self.combo_box.move(454, 263) 
+        self.combo_box.move(454, 263)
         self.combo_box.setFixedWidth(148)
         self.mudar_img(self.label_model, 'img/trafo.png')
         self.label_model.setEnabled(False)
@@ -133,7 +134,7 @@ class App(QWidget):
 
             try:
                 self.mudar_img(self.label_model, img_modelo)
-                self.label_model.setEnabled(True)                
+                self.label_model.setEnabled(True)
             except Exception as e:
                 print(e)
 
@@ -160,7 +161,7 @@ class App(QWidget):
             return fileName
 
     def sel_lin(self):
-        indices = self.tabela_model.selectionModel().selectedRows() 
+        indices = self.tabela_model.selectionModel().selectedRows()
         for index in sorted(indices):
             nl = index.row()
 
@@ -168,11 +169,11 @@ class App(QWidget):
         self.modelo_selecionado = nl
 
     def linha_selecionada(self):
-        tabela = self.tabela_model.selectionModel().selectedRows() 
+        tabela = self.tabela_model.selectionModel().selectedRows()
         for idx in sorted(tabela):
             num_lin = idx.row()
 
-        return 
+        return
 
     def conf_tab_def(self, _obj):
         self.ae_aw = False
@@ -214,7 +215,7 @@ class App(QWidget):
     def conf_tab_model(self, _obj, _end_json):
         # carregar .json
         # thornton_file = "thornton_cores.json"
-        try:                
+        try:
             with open(_end_json, 'r') as f:
                 _dic = json.load(f)
 
@@ -301,7 +302,7 @@ def testar_funcoes():
     enrol_pri, ip = trafo.det_enrol_pri(pout, n, vmin, kw, delta_b, entreferro * 2, uo)
     print("[4] - np =", round(enrol_pri), "espiras")
 
-    # step: 5   
+    # step: 5
     # obj: determinar o número de espiras do enrolamento secundário
     enrol_sec    = trafo.det_enrol_sec(round(enrol_pri), vout, vd, vmin, kw)
     print("[5] - ns =", round(enrol_sec), "espiras")
@@ -320,7 +321,7 @@ def testar_funcoes():
 if __name__ == "__main__":
     executar_app = True
 
-    if executar_app:        
+    if executar_app:
         app = QApplication(sys.argv)
         ex = App()
         sys.exit(app.exec_())
