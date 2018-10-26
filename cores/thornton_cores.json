@@ -10,7 +10,7 @@
     "lt_units": "cm",
     "V": "1.34",
     "V_units": "cm**3",
-    "AaAw": "0.08",
+    "AeAw": "0.08",
     "AeAw_units": "cm**4",
     "Modelo": "EE-20"
   },
@@ -25,7 +25,7 @@
     "lt_units": "cm",
     "V": "4.00",
     "V_units": "cm**3",
-    "AaAw": "0.48",
+    "AeAw": "0.48",
     "AeAw_units": "cm**4",
     "Modelo": "EE-30/7"
   },
@@ -40,7 +40,7 @@
     "lt_units": "cm",
     "V": "8.00",
     "V_units": "cm**3",
-    "AaAw": "1.02",
+    "AeAw": "1.02",
     "AeAw_units": "cm**4",
     "Modelo": "EE-30/14"
   },
@@ -55,7 +55,7 @@
     "lt_units": "cm",
     "V": "17.10",
     "V_units": "cm**3",
-    "AaAw": "2.84",
+    "AeAw": "2.84",
     "AeAw_units": "cm**4",
     "Modelo": "EE-42/15"
   },
@@ -70,7 +70,7 @@
     "lt_units": "cm",
     "V": "23.30",
     "V_units": "cm**3",
-    "AaAw": "3.77",
+    "AeAw": "3.77",
     "AeAw_units": "cm**4",
     "Modelo": "EE-42/20"
   },
@@ -85,7 +85,7 @@
     "lt_units": "cm",
     "V": "42.50",
     "V_units": "cm**3",
-    "AaAw": "8.85",
+    "AeAw": "8.85",
     "AeAw_units": "cm**4",
     "Modelo": "EE-55"
   },
@@ -100,7 +100,7 @@
     "lt_units": "cm",
     "V": "39.10",
     "V_units": "cm**3",
-    "AaAw": "14.57",
+    "AeAw": "14.57",
     "AeAw_units": "cm**4",
     "Modelo": "EE-65/13"
   },
@@ -115,7 +115,7 @@
     "lt_units": "cm",
     "V": "78.20",
     "V_units": "cm**3",
-    "AaAw": "19.68",
+    "AeAw": "19.68",
     "AeAw_units": "cm**4",
     "Modelo": "EE-65/26"
   },
@@ -130,7 +130,7 @@
     "lt_units": "cm",
     "V": "117.30",
     "V_units": "cm**3",
-    "AaAw": "29.53",
+    "AeAw": "29.53",
     "AeAw_units": "cm**4",
     "Modelo": "EE-65/39"
   },
@@ -145,7 +145,7 @@
     "lt_units": "cm",
     "V": "140.45",
     "V_units": "cm**3",
-    "AaAw": "62.43",
+    "AeAw": "62.43",
     "AeAw_units": "cm**4",
     "Modelo": "EE-76/25"
   },
@@ -160,7 +160,7 @@
     "lt_units": "cm",
     "V": "421.35",
     "V_units": "cm**3",
-    "AaAw": "187.30",
+    "AeAw": "187.30",
     "AeAw_units": "cm**4",
     "Modelo": "EE-76/76"
   }
