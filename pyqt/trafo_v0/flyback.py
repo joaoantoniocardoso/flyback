@@ -9,17 +9,22 @@ from wires import Wire
 from transformers import Coil, CoilCombination
 
 
+# Python program to illustrate the intersection
+# of two lists in most simple way
+def intersection(lst1, lst2):
+    return [value for value in lst1 if value in lst2]
+
+
 def maximumTotalLoss(coilCombination, nscoil):
-    return coilCombination.np.Ww_max + nscoil.Ww_max
+    return (coilCombination.np.Ww_max + nscoil.Ww_max,
+            coilCombination.np.awg,
+            nscoil.awg)
 
 
 def minimumTotalLoss(coilCombination, nscoil):
-    return coilCombination.np.Ww_min + nscoil.Ww_min
-
-
-def averageTotalLoss(coilCombination, nscoil):
-    return 0.5 * (maximumTotalLoss(coilCombination, nscoil) +
-                  minimumTotalLoss(coilCombination, nscoil))
+    return (coilCombination.np.Ww_min + nscoil.Ww_min,
+            coilCombination.np.awg,
+            nscoil.awg)
 
 
 def find_next_core_aeaw(_aeaw_min, _cores_list, _index=0):
@@ -270,9 +275,9 @@ for c in cores_list:
           str(round(wire_sec_acu_min * 1E4, 3)) + ' [cm^2] is needed')
 
     coilCombinationList = []
-    secundaryCoilList = []
     # Primary Calculations
     for wp in wires_list:
+        secundaryCoilList = []
         # Number of paralell wires for the primary:
         Nwp_min = (wire_pri_acu_min / wp.acu)
         if(Nwp_min < 1):
@@ -286,10 +291,11 @@ for c in cores_list:
                          Np,
                          Ip1_rms)
             # Debug by printing
+            '''
             print('==========[Primary]==========')
             pcoil.print()
             print('---------[Secundary]---------')
-
+            '''
             # Secundary Calculations
             for ws in wires_list:
                 # Number of paralell wires for the secundary:
@@ -305,7 +311,7 @@ for c in cores_list:
                                  Ns,
                                  Is1_rms)
                     # Debug by printing
-                    scoil.print()
+                    '''scoil.print()'''
                     # Appends every secundary coil in a list
                     secundaryCoilList.append(scoil)
 
@@ -325,24 +331,31 @@ for c in cores_list:
     else:
         break
 
-print('~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-print(min([min([minimumTotalLoss(coilCombination, scoil) for scoil in coilCombination.ns]) for coilCombination in coilCombinationList]))
-print(min([min([maximumTotalLoss(coilCombination, scoil) for scoil in coilCombination.ns]) for coilCombination in coilCombinationList]))
-print(min([min([averageTotalLoss(coilCombination, scoil) for scoil in coilCombination.ns]) for coilCombination in coilCombinationList]))
-print('~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+# Less losses
+coilCombinationList_Ww_max = sorted(coilCombinationList,
+                                    key=lambda x: x.np.Ww_max,
+                                    reverse=False)
+for cc in coilCombinationList_Ww_max:
+    cc.ns = sorted(cc.ns, key=lambda x: x.Ww_max, reverse=False)
 
-# print:
-'''
-for i in range(len(awgp)):
-    print('\t\t\t' +
-          str(round(awgp[i], 5)) + '[awg], ' +
-          str(Nwp_max[i]) + '[wires], ' +
-          str(round(Wpw_max[i], 3)) + '[W], ' +
-          str(round(Awtp_max[i], 3)) + '[cm^2], ' +
-          str(round(awgs[i], 5)) + '[awg], ' +
-          str(Nws_max[i]) + '[wires], ' +
-          str(round(Wsw_max[i], 3)) + '[W], ' +
-          str(round(Awts_max[i], 3)) + '[cm^2], ' +
-          '.')
-'''
+# Less Occuped Area
+coilCombinationList_Awt_max = sorted(coilCombinationList,
+                                     key=lambda x: x.np.Awt_max,
+                                     reverse=False)
+for cc in coilCombinationList_Awt_max:
+    cc.ns = sorted(cc.ns, key=lambda x: x.Awt_max, reverse=False)
+
+
+# Intersection of two lists looking for awg
+coilCombinationList_intersection = intersection(coilCombinationList_Ww_max,
+                                                coilCombinationList_Awt_max)
+
+for cc in coilCombinationList_intersection[:1]:
+    print('==========[Primary]==========')
+    cc.np.print()
+    print('---------[Secundary]---------')
+    for ns in cc.ns[:1]:
+        ns.print()
+
+
 # end
