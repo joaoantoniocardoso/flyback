@@ -16,20 +16,26 @@ class Coil:
     Awt_min: float      # minimum total window area
     Awt_max: float      # maximum total window area
 
-    def __init__(self, wire_pri_acu_min, core, aw, wire, N, I_rms):
+    def __init__(self, wire_pri_acu_min, core, aw, wire, N, I_rms, kw):
         self.awg = wire.awg
-        self.Nw_min = (wire_pri_acu_min / wire.acu)
+        self.Nw_min = (wire_pri_acu_min / (wire.acu / kw))
         if(self.Nw_min < 1):
             self.Nw_min = 1
-        self.Nw_max = ceil((aw) / (wire.acu * N))
+        self.Nw_max = (aw) / (wire.acu * N / kw)
+        # arredonda para cima se couber
+        if(ceil(self.Nw_max * (wire.acu / kw)) > aw):
+            self.Nw_max = ceil(self.Nw_max) - 1
+        else:
+            self.Nw_max = ceil(self.Nw_max)
+        # print((aw) / (wire.acu * N / kw), self.Nw_max * (wire.acu / kw), self.Nw_max)
         if(self.Nw_max < 1):
                 self.Nw_max = 1
         self.Rw_min = wire.rho100c * core.lt * N / ceil(self.Nw_max)
         self.Rw_max = wire.rho100c * core.lt * N / ceil(self.Nw_min)
         self.Ww_min = self.Rw_min * pow(I_rms, 2)
         self.Ww_max = self.Rw_max * pow(I_rms, 2)
-        self.Awt_min = ceil(self.Nw_min) * N * wire.aw
-        self.Awt_max = ceil(self.Nw_max) * N * wire.aw
+        self.Awt_min = ceil(self.Nw_min) * N * (wire.aw / kw)
+        self.Awt_max = ceil(self.Nw_max) * N * (wire.aw / kw)
 
     def print(self):
             print(str(self.awg) + ' awg MIN\t\tMAX')

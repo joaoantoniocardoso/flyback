@@ -9,8 +9,6 @@ from wires import Wire
 from transformers import Coil, CoilCombination
 
 
-# Python program to illustrate the intersection
-# of two lists in most simple way
 def intersection(lst1, lst2):
     return [value for value in lst1 if value in lst2]
 
@@ -94,8 +92,8 @@ wires_list = Wire.sort(wires_list)
 # adequated 380/220 voltage range: 202 to 231 volts.
 # The european range: 195 to 265 volts.
 # The universal range: 85 to 265 volts.
-Vline_rms_min = 253
-Vline_rms_max = 340
+Vline_rms_min = 85
+Vline_rms_max = 265
 # Line frequency (fl)
 # Following brazillian PRODIST module 8 form 01/01/2018 the range
 # is from 59.9 to 60.1 Hz.
@@ -275,6 +273,7 @@ for c in cores_list:
           str(round(wire_sec_acu_min * 1E4, 3)) + ' [cm^2] is needed')
 
     coilCombinationList = []
+    kw = 0.7        # wire winding factor
     # Primary Calculations
     for wp in wires_list:
         secundaryCoilList = []
@@ -282,14 +281,15 @@ for c in cores_list:
         Nwp_min = (wire_pri_acu_min / wp.acu)
         if(Nwp_min < 1):
             Nwp_min = 1
-        Awtp_min = ceil(Nwp_min) * Np * wp.aw
+        Awtp_min = ceil(Nwp_min) * Np * (wp.aw / kw)
         if((Awtp_min <= aw1)):        # it is possible to use it
             pcoil = Coil(wire_pri_acu_min,
                          core_selected,
                          aw1,
                          wp,
                          Np,
-                         Ip1_rms)
+                         Ip1_rms,
+                         kw)
             # Debug by printing
             '''
             print('==========[Primary]==========')
@@ -302,14 +302,15 @@ for c in cores_list:
                 Nws_min = ceil(wire_sec_acu_min / ws.acu)
                 if(Nws_min < 1):
                     Nws_min = 1
-                Awts_min = Nws_min * Ns * ws.aw
+                Awts_min = Nws_min * Ns * (ws.aw / kw)
                 if((Awts_min <= aw2)):        # it is possible to use it
                     scoil = Coil(wire_sec_acu_min,
                                  core_selected,
                                  aw2,
                                  ws,
                                  Ns,
-                                 Is1_rms)
+                                 Is1_rms,
+                                 kw)
                     # Debug by printing
                     '''scoil.print()'''
                     # Appends every secundary coil in a list
@@ -345,17 +346,56 @@ coilCombinationList_Awt_max = sorted(coilCombinationList,
 for cc in coilCombinationList_Awt_max:
     cc.ns = sorted(cc.ns, key=lambda x: x.Awt_max, reverse=False)
 
-
 # Intersection of two lists looking for awg
 coilCombinationList_intersection = intersection(coilCombinationList_Ww_max,
                                                 coilCombinationList_Awt_max)
 
-for cc in coilCombinationList_intersection[:1]:
+'''
+# Debug Prints
+d = 10
+for cc in coilCombinationList_intersection[:d]:
     print('==========[Primary]==========')
     cc.np.print()
     print('---------[Secundary]---------')
-    for ns in cc.ns[:1]:
+    for ns in cc.ns[:d]:
         ns.print()
+'''
+
+primaryWire_selected = coilCombinationList_intersection[1].np
+secundaryWire_selected = coilCombinationList_intersection[1].ns[1]
+
+print('\t\tThe selected primary wire is ' +
+      str(primaryWire_selected.awg) + ' awg')
+print('\t\tThe selected secundary wire is ' +
+      str(secundaryWire_selected.awg) + ' awg')
+print('\t\tUsing ' + str(primaryWire_selected.Nw_min) +
+      ' in paralell for primary side and ' +
+      str(secundaryWire_selected.Nw_min) +
+      ' for secundary:')
+print('\t\t\toccuped area is ' +
+      str(round(primaryWire_selected.Awt_min +
+                secundaryWire_selected.Awt_min, 2)) + ' cm^2' +
+      ' (' + str(round(100 * (primaryWire_selected.Awt_min +
+                              secundaryWire_selected.Awt_min) /
+                       aw_util, 2)) + '%)')
+print('\t\t\tlosses is ' +
+      str(round(primaryWire_selected.Ww_max +
+                secundaryWire_selected.Ww_max, 2)) + ' W')
+print('\t\tUsing ' + str(primaryWire_selected.Nw_max) +
+      ' in paralell for primary side and ' +
+      str(secundaryWire_selected.Nw_max) +
+      ' for secundary:')
+print('\t\t\toccuped area is ' +
+      str(round(primaryWire_selected.Awt_max +
+                secundaryWire_selected.Awt_max, 2)) + ' cm^2' +
+      ' (' + str(round(100 * (primaryWire_selected.Awt_max +
+                              secundaryWire_selected.Awt_max) /
+                       aw_util, 2)) + '%)')
+print('\t\t\tlosses is ' +
+      str(round(primaryWire_selected.Ww_min +
+                secundaryWire_selected.Ww_min, 2)) + ' W')
+
+
 
 
 # end
