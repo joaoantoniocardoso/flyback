@@ -99,7 +99,7 @@ Vline_rms_max = 265
 # is from 59.9 to 60.1 Hz.
 fl = 60
 # Maximum output power (Pout) in watts
-Pout = 100
+Pout = 60
 # Estimated efficiency (Eff)
 Eff = 0.70
 
@@ -110,7 +110,10 @@ Kl1 = Kl = 1
 
 
 # STEP 2. Determine DC link capacitor (CDC) and DC link voltage range
-Cdc = 1E-6 * Pin        # 1uF per watt
+Cdc = 2E-6 * Pin        # 1uF per watt
+print('Cdc: ' + str(round(Cdc * 1E6, 2)) + ' uF')
+Cdc = 220 * 1E-6        # ESCOLHA ARBITRARIA
+print('Cdc adjusted: ' + str(round(Cdc * 1E6, 2)) + ' uF')
 Dch = 0.2               # typical capacitor charge dutycycle
 Vdc_min = sqrt(2 * pow(Vline_rms_min, 2) - (Pin * (1 - Dch)) / (Cdc * fl))
 Vdc_max = sqrt(2) * Vline_rms_max
@@ -128,7 +131,7 @@ Vds_max = Vds_nom - VRO
 print('Vds_max: ' + str(round(Vds_max, 3)) + ' [V]')
 
 # STEP 4. Determine the transformer primary side inductance (Lm)
-fs = 28E3      # switching frequency
+fs = 50E3      # switching frequency
 
 IEDC = Pin / (Vdc_min * Dmax)
 
@@ -191,10 +194,10 @@ for c in cores_list:
     Np_min = ceil(Lm * Iover * 1E6 / (Bsat * core_selected.ae * 1E2))
     print('\tNp_min: ' + str(Np_min) + ' [turns]')
 
-    Vd1 = 1.5       # Diode forward voltage drop for output 1
-    Vo1 = 13        # Voltage for Output 1
-    # Ns_min = trafo.det_enrol_sec(Np_min, Vo1, Vd1, Vdc_min, Dmax)
-    n = (Dmax / (1 - Dmax)) * (Vdc_min / (Vo1 + Vd1))
+    Vdf1 = 1.5       # Diode forward voltage drop for output 1
+    Vo1 = 12        # Voltage for Output 1
+    # Ns_min = trafo.det_enrol_sec(Np_min, Vo1, Vdf1, Vdc_min, Dmax)
+    n = (Dmax / (1 - Dmax)) * (Vdc_min / (Vo1 + Vdf1))
     Ns_min = Np_min / n
     Np = int(ceil(Np_min))
     Ns = int(ceil(Ns_min))
@@ -204,15 +207,15 @@ for c in cores_list:
     print('\t\tInitial condition:\n\t\t\tVVn = Np/Ns = ' +
           str(Np) + '/' + str(Ns) + ' = ' + str(round(n, 3)))
     print('\t\t\tVVo1_min @ Dmax: ' +
-          str(round((Vdc_min * (Dmax / (1 - Dmax)) / (Np / Ns)) - Vd1, 3)))
+          str(round((Vdc_min * (Dmax / (1 - Dmax)) / (Np / Ns)) - Vdf1, 3)))
     print('\t\t\tVo1_max @ Dmax: ' +
-          str(round((Vdc_max * (Dmax / (1 - Dmax)) / (Np / Ns)) - Vd1, 3)))
+          str(round((Vdc_max * (Dmax / (1 - Dmax)) / (Np / Ns)) - Vdf1, 3)))
 
     vo_err = 0.001      # accepted error for Vo
     for _Np in range(Np, 1000):
         for _Ns in range(Ns, 1000):
             _n = _Np / _Ns
-            _Vo = (Vdc_min * (Dmax / (1 - Dmax)) / (_n) - Vd1)
+            _Vo = (Vdc_min * (Dmax / (1 - Dmax)) / (_n) - Vdf1)
             if((_Vo < Vo1 * (1 + vo_err)) and
                (_Vo > Vo1 * (1 - vo_err))):
                 Ns = _Ns
@@ -225,18 +228,18 @@ for c in cores_list:
 
     print('\t\tOptimized condition:\n\t\t\tn = Np/Ns = ' +
           str(Np) + '/' + str(Ns) + ' = ' + str(round(n, 3)))
-    Dmin = (Vo1 + Vd1) / ((Vo1 + Vd1) + (Vdc_max / (Np / Ns)))
+    Dmin = (Vo1 + Vdf1) / ((Vo1 + Vdf1) + (Vdc_max / (Np / Ns)))
     print('\t\t\tDmin: ' + str(round(Dmin, 3)))
-    Dmax = (Vo1 + Vd1) / ((Vo1 + Vd1) + (Vdc_min / (Np / Ns)))
+    Dmax = (Vo1 + Vdf1) / ((Vo1 + Vdf1) + (Vdc_min / (Np / Ns)))
     print('\t\t\tDmax: ' + str(round(Dmax, 3)))
     print('\t\t\tVo1_min @ Dmin: ' +
-          str(round((Vdc_min * (Dmin / (1 - Dmin)) / (Np / Ns)) - Vd1, 3)))
+          str(round((Vdc_min * (Dmin / (1 - Dmin)) / (Np / Ns)) - Vdf1, 3)))
     print('\t\t\tVo1_min @ Dmax: ' +
-          str(round((Vdc_min * (Dmax / (1 - Dmax)) / (Np / Ns)) - Vd1, 3)))
+          str(round((Vdc_min * (Dmax / (1 - Dmax)) / (Np / Ns)) - Vdf1, 3)))
     print('\t\t\tVo1_max @ Dmin: ' +
-          str(round((Vdc_max * (Dmin / (1 - Dmin)) / (Np / Ns)) - Vd1, 3)))
+          str(round((Vdc_max * (Dmin / (1 - Dmin)) / (Np / Ns)) - Vdf1, 3)))
     print('\t\t\tVo1_max @ Dmax: ' +
-          str(round((Vdc_max * (Dmax / (1 - Dmax)) / (Np / Ns)) - Vd1, 3)))
+          str(round((Vdc_max * (Dmax / (1 - Dmax)) / (Np / Ns)) - Vdf1, 3)))
 
     # STEP 8. Determine the wire diameter for each winding
     print('\t\t\nCoil wire selection:')
@@ -244,7 +247,8 @@ for c in cores_list:
     # Section 3.2.1.5: Wires
     # Compute primary and secundary currents
     Ip1_rms = Ids_rms
-    Is1_rms = Ids_rms * sqrt(((1 - Dmax) / Dmax) * ((VRO * Kl1) / (Vo1 + Vd1)))
+    Is1_rms = Ids_rms * sqrt(((1 - Dmax) / Dmax) * (
+        (VRO * Kl1) / (Vo1 + Vdf1)))
 
     # Compute reserved area for each coil
     aw_iso = core_selected.aw * 0.01        # lost window area by insulation
@@ -350,7 +354,7 @@ for cc in coilCombinationList_Awt_max:
 coilCombinationList_intersection = intersection(coilCombinationList_Ww_max,
                                                 coilCombinationList_Awt_max)
 
-'''
+
 # Debug Prints
 d = 10
 for cc in coilCombinationList_intersection[:d]:
@@ -359,7 +363,7 @@ for cc in coilCombinationList_intersection[:d]:
     print('---------[Secundary]---------')
     for ns in cc.ns[:d]:
         ns.print()
-'''
+
 
 primaryWire_selected = coilCombinationList_intersection[1].np
 secundaryWire_selected = coilCombinationList_intersection[1].ns[1]
@@ -395,7 +399,60 @@ print('\t\t\tlosses is ' +
       str(round(primaryWire_selected.Ww_min +
                 secundaryWire_selected.Ww_min, 2)) + ' W')
 
+'''
+k = 0.9    # transformer coupling factor
+Lp = Lm / k
 
+
+Lsp = (Np / Ns) * M
+Lps = (Ns / Np) * M
+'''
+
+# STEP-9 : Choose the rectifier diode in the secondary
+# side based on the voltage and current ratings
+print('Output Diode selection:')
+Vd1 = Vo1 + (Vdc_max * (Vo1 + Vdf1) / VRO)
+Id1_rms = Ids_rms * sqrt((1 - Dmax) / Dmax) * (VRO * Kl1 / (Vo1 + Vdf1))
+print('\tVd: ' + str(ceil(1.3 * Vd1)) + ' V')
+print('\tId: ' + str(ceil(1.5 * Id1_rms)) + ' A')
+
+# (10) STEP-10 : Determine the output capacitor
+# considering the voltage and current ripple.
+print('Output Capacitor Selection:')
+Io1 = Pout / Vo1
+Co1 = 1000 * 1E-6            # Capacitance
+Co1_esr = 20 * 1E-3         # ESR
+Ico1_rms = sqrt(pow(Id1_rms, 2) - pow(Io1, 2))
+dVo1 = (Io1 * Dmax / (Co1 * fs)) + (
+    Ids_peak * VRO * Co1_esr * Kl1 / (Vo1 + Vdf1))
+Co1_loss = Co1_esr * pow(Ico1_rms, 2)
+print('\tCo1: ' + str(ceil(Co1 * 1E6)) + ' uF')
+print('\tIco1: ' + str(round(Ico1_rms, 2)) + ' A')
+print('\tCo1_esr: ' + str(round(Co1_loss, 2) * 1E3) + ' mW')
+print('\tRipple: ' + str(ceil(100 * dVo1 / Vo1)) + ' %')
+
+# (11) STEP-11 : Design the RCD snubber.
+# snubber capacitor voltage at the minimum input voltage
+# and full load condition
+print('Snubber selection:')
+for k in range(25, 10, -1):
+    Vsn = (k / 10) * VRO
+    Llk = 1 * 1E-6
+    dVsn = (5 / 100) * Vsn     # 5~10% ripple is reasonable
+    Psn = fs * Llk * pow(Ids_peak, 2) * (Vsn / (Vsn - VRO))
+    Rsn = pow(Vsn, 2) / Psn
+    Csn = Vsn / (Rsn * fs * dVsn)
+    Ids2 = (Pin * (Vdc_max + VRO) / (Vdc_max * VRO)) + (
+        (Vdc_max * VRO) / (2 * Lm * fs * (Vdc_max + VRO)))
+    Vsn2 = VRO + sqrt(pow(VRO, 2) + 2 * Rsn * Llk * fs * pow(Ids2, 2))
+    Vds_max2 = Vdc_max + Vsn2
+    # print(k / 10, Vds_max2, Csn, Rsn, Psn) # debug
+    if(Vds_max2 < 0.9 * Vds_max):
+        break
+print('\tVds(max): ' + str(ceil(Vds_max2)) + ' V')
+print('\tCsn: ' + str(ceil(Csn * 1E9)) + ' nF')
+print('\tRsm: ' + str(ceil(Rsn) * 1E-3) + ' kOhms')
+print('\tPsn: ' + str(round(Psn, 2)) + ' W')
 
 
 # end
