@@ -108,6 +108,8 @@ Pin = Pout / Eff
 # Kl = Pout[n]/Po
 Kl1 = Kl = 1
 
+print("Vin: ")
+
 
 # STEP 2. Determine DC link capacitor (CDC) and DC link voltage range
 Cdc = 2E-6 * Pin        # 1uF per watt
@@ -447,12 +449,15 @@ for k in range(25, 10, -1):
     Vsn2 = VRO + sqrt(pow(VRO, 2) + 2 * Rsn * Llk * fs * pow(Ids2, 2))
     Vds_max2 = Vdc_max + Vsn2
     # print(k / 10, Vds_max2, Csn, Rsn, Psn) # debug
+
     if(Vds_max2 < 0.9 * Vds_max):
         break
 print('\tVds(max): ' + str(ceil(Vds_max2)) + ' V')
 print('\tCsn: ' + str(ceil(Csn * 1E9)) + ' nF')
 print('\tRsm: ' + str(ceil(Rsn) * 1E-3) + ' kOhms')
 print('\tPsn: ' + str(round(Psn, 2)) + ' W')
+
+# (12) STEP-12 : Design the feed back loop.
 
 
 # end

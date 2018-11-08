@@ -49,11 +49,10 @@ def det_enrol_pri(_Pout, _n, _Vin_min, _D_max, _DB, _lg, _u0):
     _Vin_min minimum input-side (primary) voltage
     _DB     variation of density of magnetic flux
     _u0     permeability
-    _lg     air gap
+    _lg     air gap length
     """
     Ip = (2 * _Pout) / (_n * _Vin_min * _D_max)
     np = (_DB * 2 * _lg) / (_u0 * Ip)
-
     return ceil(np), Ip
 
 
@@ -70,7 +69,7 @@ def det_enrol_sec(_np, _vout, _vd, _vin_min, _d_max):
 
 def det_acu_min(_ip_rms, _j):
     """ Returns the minimum copper area for a given RMS current."""
-    return _ip_rms / (_j * 1E4)
+    return _ip_rms / (_j*1E4)
 
 
 def det_prof_penetr(_fs):
